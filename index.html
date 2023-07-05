@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>星铁版本预测（自用）</title>
+    <script src="https://lib.baomitu.com/vue/2.6.14/vue.js"></script>
+    <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      ul {
+        list-style: none;
+      }
+      a {
+        text-decoration: none;
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px;
+        align-items: center;
+        border-bottom: 1px solid #c1c1c1;
+        font-size: 14px;
+      }
+      .row:nth-child(even) {
+        background-color: #f5f5f5;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="box">
+        <div v-for="(ele,index) in date" :key="index" class="row">
+          <span>版本：<br />{{ele.version}}</span>
+          <span>开始时间：<br />{{ele.startDate}}</span>
+          <span>结束时间：<br />{{ele.endDate}}</span>
+          <span>前瞻时间：<br />{{ele.qianzhan}}</span>
+        </div>
+      </div>
+    </div>
+    <script>
+      const versionData = [];
+      let date = '2023-04-26';
+      let t = 6;
+      const arr = [
+        {
+          version: '1.0',
+          startDate: '2023-04-26',
+          endDate: '2023-06-07',
+          qianzhan: '0000-00-00',
+        },
+      ];
+      let v = 0;
+      let v1 = 0;
+      for (var i = 0; i <= 40; i++) {
+        if (i === 0) {
+          v++;
+          v1 = 1;
+        } else if (v1 % 10 === 0) {
+          v++;
+          v1 = 0;
+        }
+        for (const item of versionData) {
+          if (
+            !dayjs(date).add(t, 'w').isAfter(item) &&
+            !dayjs(date)
+              .add(t * 2, 'w')
+              .isBefore(item)
+          ) {
+            v++;
+            v1 = 0;
+          }
+        }
+        arr.push({
+          version: `${v}.${parseInt(v1 % 10)}`,
+          startDate: dayjs(date).add(t, 'w').format('YYYY-MM-DD'),
+          endDate: dayjs(date)
+            .add(t * 2, 'w')
+            .format('YYYY-MM-DD'),
+          qianzhan: dayjs(date)
+            .add(t, 'w')
+            .subtract(12, 'd')
+            .format('YYYY-MM-DD'),
+        });
+        date = dayjs(date).add(t, 'w').format('YYYY-MM-DD');
+        v1++;
+      }
+      new Vue({
+        el: '#app',
+        data() {
+          return {
+            date: arr,
+          };
+        },
+      });
+    </script>
+  </body>
+</html>
